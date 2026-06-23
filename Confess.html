@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>psst...</title>
+<style>
+  :root {
+    --cream: #FFF6EC;
+    --pink-hot: #FF5D8F;
+    --pink-soft: #FFD3E0;
+    --yellow: #FFC857;
+    --plum: #3A1F3D;
+    --green-yes: #4ECDA4;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 15% 20%, var(--pink-soft) 0%, transparent 35%),
+      radial-gradient(circle at 85% 75%, #FFE9A8 0%, transparent 40%);
+    font-family: 'Quicksand', 'Trebuchet MS', sans-serif;
+    color: var(--plum);
+    overflow-x: hidden;
+  }
+
+  @font-face {
+    font-family: 'Fredoka';
+    src: local('Arial');
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 80px;
+    position: relative;
+    text-align: center;
+  }
+
+  .floaters {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .floater {
+    position: absolute;
+    font-size: 28px;
+    opacity: 0.35;
+    animation: drift linear infinite;
+    bottom: -60px;
+  }
+
+  @keyframes drift {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.35; }
+    90% { opacity: 0.35; }
+    100% { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
+  }
+
+  .card {
+    position: relative;
+    z-index: 2;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pink-hot);
+    background: white;
+    border: 2px solid var(--pink-hot);
+    border-radius: 999px;
+    padding: 6px 18px;
+    margin-bottom: 22px;
+    animation: pop-in 0.6s ease both;
+  }
+
+  h1 {
+    font-family: 'Fredoka', 'Trebuchet MS', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.1rem, 7vw, 3.2rem);
+    line-height: 1.15;
+    margin: 0 0 18px;
+    color: var(--plum);
+    animation: pop-in 0.7s ease both;
+    animation-delay: 0.08s;
+  }
+
+  h1 .accent {
+    color: var(--pink-hot);
+    position: relative;
+    display: inline-block;
+  }
+
+  .sub {
+    font-size: clamp(1rem, 3vw, 1.15rem);
+    line-height: 1.6;
+    color: #6B4E6E;
+    margin: 0 0 36px;
+    animation: pop-in 0.7s ease both;
+    animation-delay: 0.16s;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 80px;
+    position: relative;
+    animation: pop-in 0.7s ease both;
+    animation-delay: 0.24s;
+  }
+
+  button {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 38px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #yesBtn {
+    background: var(--green-yes);
+    color: white;
+    box-shadow: 0 8px 0 #2f9e7c, 0 10px 18px rgba(46,158,124,0.3);
+  }
+
+  #yesBtn:hover {
+    transform: translateY(-3px) scale(1.04);
+  }
+
+  #yesBtn:active {
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 #2f9e7c;
+  }
+
+  #noBtn {
+    background: white;
+    color: var(--pink-hot);
+    border: 2px solid var(--pink-hot);
+    position: relative;
+    z-index: 5;
+  }
+
+  #noBtn.runaway {
+    position: fixed;
+    transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .yes-counter {
+    font-size: 0.85rem;
+    color: #9A7E9C;
+    margin-top: 14px;
+    min-height: 18px;
+    animation: pop-in 0.7s ease both;
+    animation-delay: 0.3s;
+  }
+
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Success state */
+  .success {
+    display: none;
+    z-index: 2;
+    text-align: center;
+    max-width: 480px;
+  }
+
+  .success.show {
+    display: block;
+    animation: pop-in 0.5s ease both;
+  }
+
+  .success .emoji {
+    font-size: 4rem;
+    margin-bottom: 12px;
+    display: inline-block;
+    animation: wiggle 1.2s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-6deg); }
+    50% { transform: rotate(6deg); }
+  }
+
+  .success h2 {
+    font-family: 'Fredoka', 'Trebuchet MS', sans-serif;
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    color: var(--pink-hot);
+    margin: 0 0 12px;
+  }
+
+  .success p {
+    color: #6B4E6E;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .hidden { display: none !important; }
+
+  .confetti-piece {
+    position: fixed;
+    top: -20px;
+    border-radius: 2px;
+    z-index: 10;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(540deg); opacity: 0.9; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .floater, .success .emoji { animation: none; }
+  }
+
+   /* Footer */
+  .site-footer { position: fixed; left: 0; right: 0; bottom: 12px; z-index: 30; display:flex; justify-content:center; pointer-events: none; }
+  .site-footer .footer-inner { pointer-events: auto; background: rgba(255,255,255,0.9); border-radius: 999px; padding: 8px 14px; font-size: 0.92rem; color: var(--plum); border: 1px solid rgba(58,31,61,0.06); box-shadow: 0 6px 18px rgba(58,31,61,0.06); }
+
+</style>
+</head>
+<body>
+
+<div class="floaters" id="floaters"></div>
+
+<div class="stage">
+  <div class="card" id="askCard">
+    <span class="eyebrow">a very important question</span>
+    <h1>okay so... I kind of like you.<br>like, <span class="accent">a lot</span>. 💌</h1>
+    <p class="sub">And so you know that fact naman diba? so here it is a simple website form that I made for you, so i hope you like it. Anyway. Pwede bang akin ka nalang?</p>
+
+    <div class="buttons">
+      <button id="yesBtn">Yes, obviously 💖</button>
+      <button id="noBtn">No</button>
+    </div>
+    <div class="yes-counter" id="counter"></div>
+  </div>
+
+  <div class="success" id="successCard">
+    <span class="emoji">🎉</span>
+    <h2>wait, really?? 🥹</h2>
+    <p>I knew you'd say yes! 💖, I Love you so much! 🤗</p>
+    <p>If ni yes naka please click the name below, para ma redirect ka sa laing post</p>
+  </div>
+</div>
+
+<footer class="site-footer" aria-hidden="false">
+  <div class="footer-inner">
+    Made with ❤️ by
+    <a id="ownerLink" href="https://www.facebook.com/100083875898973/posts/995999363205918/?app=fbl" target="_blank" rel="noopener noreferrer" style="color:var(--pink-hot);text-decoration:none;">
+      <strong id="ownerName">Your Jowa Arashi</strong>
+    </a>
+  </div>
+</footer>
+
+<script>
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const askCard = document.getElementById('askCard');
+  const successCard = document.getElementById('successCard');
+  const counter = document.getElementById('counter');
+
+  const noTexts = [
+    "No",
+    "Are you sure?",
+    "Really sure?",
+    "Think again!",
+    "Last chance...",
+    "Surely not?",
+    "C'mon now",
+    "Pretty please?",
+    "You're breaking my heart 💔",
+    "Okay this is just exercise for me now"
+  ];
+
+  let dodge = 0;
+
+  function jumpNoButtonRandomly() {
+    const rect = noBtn.getBoundingClientRect();
+
+    if (!noBtn.classList.contains('runaway')) {
+      // Lock width to avoid layout jump when switching to fixed
+      noBtn.style.width = rect.width + 'px';
+      noBtn.classList.add('runaway');
+      noBtn.style.left = rect.left + 'px';
+      noBtn.style.top = rect.top + 'px';
+    }
+
+    const margin = 12;
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const footer = document.querySelector('.site-footer');
+    const footerHeight = footer ? footer.offsetHeight + 8 : 0;
+
+    const maxX = Math.max(margin, window.innerWidth - btnWidth - margin);
+    const maxY = Math.max(margin, window.innerHeight - btnHeight - margin - footerHeight);
+
+    const newX = Math.random() * (maxX - margin) + margin;
+    const newY = Math.random() * (maxY - margin) + margin;
+
+    noBtn.style.left = newX + 'px';
+    noBtn.style.top = newY + 'px';
+
+    dodge = Math.min(dodge + 1, noTexts.length - 1);
+    noBtn.textContent = noTexts[dodge];
+
+    const scale = Math.min(1 + dodge * 0.04, 1.5);
+    yesBtn.style.transform = `scale(${scale})`;
+  }
+
+  noBtn.addEventListener('mouseenter', jumpNoButtonRandomly);
+
+  // also jump if the cursor gets close while moving across the screen
+  document.addEventListener('mousemove', (e) => {
+    if (!noBtn.classList.contains('runaway')) return;
+    const rect = noBtn.getBoundingClientRect();
+    const btnCenterX = rect.left + rect.width / 2;
+    const btnCenterY = rect.top + rect.height / 2;
+    const dist = Math.hypot(e.clientX - btnCenterX, e.clientY - btnCenterY);
+    if (dist < 80) {
+      jumpNoButtonRandomly();
+    }
+  });
+
+  noBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    jumpNoButtonRandomly();
+  });
+  noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    jumpNoButtonRandomly();
+  });
+
+  function ensureNoVisible() {
+    if (!noBtn.classList.contains('runaway')) return;
+    const rect = noBtn.getBoundingClientRect();
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const margin = 12;
+    const footer = document.querySelector('.site-footer');
+    const footerHeight = footer ? footer.offsetHeight + 8 : 0;
+    const maxX = Math.max(margin, window.innerWidth - btnWidth - margin);
+    const maxY = Math.max(margin, window.innerHeight - btnHeight - margin - footerHeight);
+
+    let left = rect.left;
+    let top = rect.top;
+    left = Math.min(Math.max(left, margin), maxX);
+    top = Math.min(Math.max(top, margin), maxY);
+    noBtn.style.left = left + 'px';
+    noBtn.style.top = top + 'px';
+  }
+
+  window.addEventListener('resize', ensureNoVisible);
+  window.addEventListener('orientationchange', ensureNoVisible);
+  window.addEventListener('load', ensureNoVisible);
+
+  function launchConfetti() {
+    const colors = ['#FF5D8F', '#FFC857', '#4ECDA4', '#FFD3E0', '#3A1F3D'];
+    for (let i = 0; i < 70; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      const size = 6 + Math.random() * 6;
+      piece.style.width = size + 'px';
+      piece.style.height = size * 0.5 + 'px';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
+      piece.style.animationDelay = (Math.random() * 0.4) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4500);
+    }
+  }
+
+  yesBtn.addEventListener('click', () => {
+    askCard.style.display = 'none';
+    successCard.classList.add('show');
+    launchConfetti();
+    setTimeout(launchConfetti, 600);
+  });
+
+  const floaters = document.getElementById('floaters');
+  const emojis = ['💕', '✨', '💗', '🌸', '💌'];
+  for (let i = 0; i < 12; i++) {
+    const f = document.createElement('div');
+    f.className = 'floater';
+    f.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    f.style.left = Math.random() * 100 + 'vw';
+    f.style.animationDuration = (10 + Math.random() * 10) + 's';
+    f.style.animationDelay = (Math.random() * 10) + 's';
+    f.style.fontSize = (18 + Math.random() * 18) + 'px';
+    floaters.appendChild(f);
+  }
+
+  // small inline owner edit (name + social URL)
+  const ownerName = document.getElementById('ownerName');
+  const ownerLink = document.getElementById('ownerLink');
+  const editName = document.getElementById('editName');
+  if (editName) {
+    editName.addEventListener('click', (e) => {
+      e.preventDefault();
+      const currentName = ownerName ? ownerName.textContent.trim() : '';
+      const currentURL = ownerLink ? ownerLink.href : '';
+      const n = prompt('Enter the display name', currentName || 'Your Name');
+      if (n && n.trim() && ownerName) ownerName.textContent = n.trim();
+      const u = prompt('Enter the full URL for people to message you (include https://)', currentURL || 'https://');
+      if (u && u.trim() && ownerLink) {
+        try {
+          const normalized = new URL(u.trim()).href;
+          ownerLink.href = normalized;
+        } catch (_) {
+          // if invalid URL, don't change
+          alert('Invalid URL — keeping the previous link.');
+        }
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
